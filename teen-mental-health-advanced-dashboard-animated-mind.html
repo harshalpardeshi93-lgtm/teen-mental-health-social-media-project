@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>Teen Social Media & Mental Health – Advanced Dashboard</title>
+  <style>
+    :root {
+      --bg: #020617;
+      --surface: #020617;
+      --surface-soft: #020617;
+      --accent: #22c55e;
+      --accent-soft: rgba(34,197,94,0.14);
+      --accent-2: #38bdf8;
+      --danger: #f97373;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+      --border: rgba(148,163,184,0.35);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --radius-md: 0.9rem;
+      --radius-lg: 1.1rem;
+      --shadow-soft: 0 26px 80px rgba(15,23,42,0.95);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      background:
+        radial-gradient(circle at top left, #1e293b 0, #020617 40%, #020617 100%),
+        radial-gradient(circle at bottom right, #020617 0, #020617 100%);
+      color: var(--text);
+      line-height: 1.6;
+      padding: var(--space-4);
+    }
+    @media (max-width: 900px) { body { padding: var(--space-3); } }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-4);
+      align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: var(--space-3); }
+    .logo-wrap { position: relative; width: 54px; height: 54px; border-radius: 999px; }
+    .logo-core {
+      width: 54px; height: 54px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 25% 20%, #bbf7d0 0, #22c55e 25%, #16a34a 50%, transparent 70%),
+        conic-gradient(from 210deg, rgba(34,197,94,0.35), rgba(56,189,248,0.25), rgba(34,197,94,0.5), rgba(56,189,248,0.2));
+      box-shadow: 0 0 0 1px rgba(34,197,94,0.5), 0 0 60px rgba(34,197,94,0.9);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-orbit {
+      position: absolute; inset: -6px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148,163,184,0.4);
+      opacity: 0.7;
+    }
+    .logo-pip { width: 18px; height: 18px; border-radius: 999px; border: 2px solid rgba(15,23,42,0.6); }
+    .mind-core { background: radial-gradient(circle at 30% 30%, #bbf7d0 0, #22c55e 40%, #16a34a 75%); box-shadow: 0 0 0 2px rgba(15,23,42,0.75); }
+    .mind-ring { position:absolute; width:30px; height:30px; border-radius:999px; border:1px dashed rgba(56,189,248,0.6); box-shadow:0 0 12px rgba(56,189,248,0.5); }
+
+
+    h1 { font-size: clamp(1.7rem, 1.2rem + 1vw, 2.2rem); letter-spacing: 0.02em; }
+    .subtitle { font-size: 0.9rem; color: var(--muted); max-width: 40rem; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: var(--accent-soft);
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      border: 1px solid rgba(34,197,94,0.45);
+      font-size: 0.75rem;
+      color: #bbf7d0;
+    }
+    .badge-dot { width: 7px; height: 7px; border-radius: 999px; background: #4ade80; box-shadow: 0 0 0 4px rgba(74,222,128,0.35); }
+
+    main { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--space-4); }
+
+    .grid-2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.2fr); gap: var(--space-4); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+    @media (max-width: 900px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: minmax(0, 1fr); } }
+
+    .card {
+      position: relative;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.8), #020617 55%, #020617 100%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: var(--space-4);
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(34,197,94,0.08), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .card-inner { position: relative; z-index: 1; }
+
+    h2 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-bottom: var(--space-3); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-3); }
+    @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .kpi { background: radial-gradient(circle at top, rgba(15,23,42,0.5), rgba(15,23,42,0.96)); border-radius: var(--radius-md); border: 1px solid rgba(148,163,184,0.24); padding: var(--space-3); font-size: 0.85rem; }
+    .kpi-label { color: var(--muted); margin-bottom: 0.35rem; }
+    .kpi-value { font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+    .kpi-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: var(--space-1); }
+    th, td { padding: 0.45rem 0.35rem; text-align: left; }
+    th { color: var(--muted); font-weight: 500; font-size: 0.76rem; border-bottom: 1px solid rgba(148,163,184,0.45); }
+    tbody tr:nth-child(odd) { background: rgba(15,23,42,0.9); }
+    tbody tr:nth-child(even) { background: rgba(15,23,42,0.78); }
+    tbody tr:hover { background: rgba(34,197,94,0.12); }
+
+    .note { font-size: 0.75rem; color: var(--muted); margin-top: var(--space-3); max-width: 40rem; }
+    .hl { color: #bbf7d0; font-weight: 500; }
+
+    .pill-small { display: inline-flex; align-items: center; gap: 0.3rem; border-radius: 999px; padding: 0.1rem 0.55rem; border: 1px solid rgba(148,163,184,0.45); font-size: 0.72rem; color: var(--muted); background: rgba(15,23,42,0.94); }
+    .pill-dot { width: 6px; height: 6px; border-radius: 999px; background: #22c55e; }
+
+    .persona { background: rgba(15,23,42,0.96); border-radius: var(--radius-md); border: 1px solid rgba(148,163,184,0.4); padding: var(--space-3); font-size: 0.82rem; display: flex; flex-direction: column; gap: 0.3rem; }
+    .persona-name { font-weight: 600; }
+    .persona-meta { font-size: 0.74rem; color: var(--muted); }
+
+    footer { max-width: 1200px; margin: var(--space-4) auto 0; font-size: 0.7rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: space-between; opacity: 0.85; }
+  
+    @keyframes floatUp {
+      0% { transform: translateY(10px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes spinOrbit {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes pulseKpi {
+      0%, 100% { box-shadow: var(--shadow-soft); }
+      50% { box-shadow: 0 0 0 1px rgba(34,197,94,0.55), 0 0 38px rgba(34,197,94,0.85); }
+    }
+    .card { animation: floatUp 650ms cubic-bezier(0.16, 1, 0.3, 1); }
+    .logo-orbit { animation: spinOrbit 18s linear infinite; }
+    .kpi:nth-child(1) { animation: pulseKpi 3s ease-in-out infinite; }
+    .kpi:nth-child(2) { animation: pulseKpi 3.4s ease-in-out infinite; }
+    .kpi:nth-child(3) { animation: pulseKpi 3.8s ease-in-out infinite; }
+    .kpi:nth-child(4) { animation: pulseKpi 4.2s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) {
+      .card, .logo-orbit, .kpi { animation: none !important; }
+    }
+    
+  </style>
+</head>
+<body>
+  <header>
+    <div class='brand'>
+      <div class='logo-wrap' aria-hidden='true'>
+        <div class='logo-core'>
+          <div class='logo-pip mind-core'></div>
+          <div class='logo-pip mind-ring'></div>
+        </div>
+        <div class='logo-orbit'></div>
+      </div>
+      <div>
+        <div class='badge'><span class='badge-dot'></span>Teen Social Media · Mental Health · Analytics + Risk Index</div>
+        <h1>Social Media Impact on Teen Mental Health – Advanced View</h1>
+        <p class='subtitle'>Cohort-level risk scoring, sleep-mediated pathways, personas and academic trade-offs built on a teen survey of social media use, sleep, stress, anxiety, addiction and performance.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Add-on 1: Mental Health Risk Index + overall KPIs -->
+    <section class='card'>
+      <div class='card-inner'>
+        <h2>Risk index & cohort snapshot</h2>
+        <div class='kpi-grid'>
+          <div class='kpi'>
+            <div class='kpi-label'>Avg. social media time</div>
+            <div class='kpi-value'>4.5 h/day</div>
+            <div class='kpi-sub'>Daily time across all platforms.</div>
+          </div>
+          <div class='kpi'>
+            <div class='kpi-label'>Avg. sleep duration</div>
+            <div class='kpi-value'>6.4 h/night</div>
+            <div class='kpi-sub'>Compared with 8–10h recommended for teens.</div>
+          </div>
+          <div class='kpi'>
+            <div class='kpi-label'>Short sleepers</div>
+            <div class='kpi-value'>60%</div>
+            <div class='kpi-sub'>Share sleeping under 7h on school nights.</div>
+          </div>
+          <div class='kpi'>
+            <div class='kpi-label'>High-risk index teens</div>
+            <div class='kpi-value'>25%</div>
+            <div class='kpi-sub'>Top risk bucket combining use, sleep & symptoms.</div>
+          </div>
+        </div>
+        <p class='note'>The <span class='hl'>Teen Risk Index</span> blends normalized social media hours, sleep deficit, stress, anxiety and addiction scores into a 0–100 score. Higher values indicate heavier use, poorer sleep and more severe symptoms within this dataset.</p>
+      </div>
+    </section>
+
+    <!-- Add-on 2 & 3: Usage band vs wellbeing + benchmarks -->
+    <section class='card'>
+      <div class='card-inner'>
+        <div style='display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;'>
+          <h2>Usage bands vs wellbeing & benchmarks</h2>
+          <span class='pill-small'><span class='pill-dot'></span>3h/day marked as high-use threshold</span>
+        </div>
+        <table aria-label='Average wellbeing metrics by social media usage band'>
+          <thead>
+            <tr>
+              <th>Usage band</th>
+              <th>Avg time</th>
+              <th>Stress</th>
+              <th>Anxiety</th>
+              <th>Addiction</th>
+              <th>Sleep (h)</th>
+              <th>Grades</th>
+              <th>Risk index</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td>0-2h</td>
+              <td>1.5h</td>
+              <td>5.5/10</td>
+              <td>5.3/10</td>
+              <td>5.9/10</td>
+              <td>6.5h</td>
+              <td>3.02</td>
+              <td>41.1</td>
+            </tr>
+
+            <tr>
+              <td>2-4h</td>
+              <td>3.0h</td>
+              <td>5.3/10</td>
+              <td>5.7/10</td>
+              <td>5.4/10</td>
+              <td>6.4h</td>
+              <td>2.98</td>
+              <td>47.5</td>
+            </tr>
+
+            <tr>
+              <td>4-6h</td>
+              <td>4.9h</td>
+              <td>5.3/10</td>
+              <td>5.8/10</td>
+              <td>5.6/10</td>
+              <td>6.4h</td>
+              <td>2.96</td>
+              <td>56.2</td>
+            </tr>
+
+            <tr>
+              <td>6-8h</td>
+              <td>7.0h</td>
+              <td>5.6/10</td>
+              <td>5.6/10</td>
+              <td>5.5/10</td>
+              <td>6.5h</td>
+              <td>3.02</td>
+              <td>64.5</td>
+            </tr>
+
+            <tr>
+              <td>8h+</td>
+              <td>8.0h</td>
+              <td>5.9/10</td>
+              <td>6.1/10</td>
+              <td>5.6/10</td>
+              <td>6.2h</td>
+              <td>2.93</td>
+              <td>72.0</td>
+            </tr>
+
+          </tbody>
+        </table>
+        <p class='note'>Usage bands around <span class='hl'>4–8 hours/day</span> tend to show higher stress, anxiety and addiction scores together with shorter average sleep and elevated risk index values compared with lighter users in this cohort.</p>
+      </div>
+    </section>
+
+    <!-- Add-on 4: Sleep-mediated effect view -->
+    <section class='card'>
+      <div class='card-inner'>
+        <div style='display:flex;justify-content:space-between;align-items:center;gap:var(--space-3);flex-wrap:wrap;'>
+          <h2>Sleep pathway: use → sleep → symptoms</h2>
+          <span class='pill-small'><span class='pill-dot'></span>Quadrants combine use level and sleep adequacy</span>
+        </div>
+        <table aria-label='Sleep pathway quadrants and average outcomes'>
+          <thead>
+            <tr>
+              <th>Profile</th>
+              <th>Avg stress</th>
+              <th>Avg anxiety</th>
+              <th>Avg risk index</th>
+              <th>Avg grades</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td>High use + adequate sleep</td>
+              <td>5.4/10</td>
+              <td>5.8/10</td>
+              <td>51.6</td>
+              <td>2.99</td>
+            </tr>
+
+            <tr>
+              <td>High use + short sleep</td>
+              <td>5.4/10</td>
+              <td>5.7/10</td>
+              <td>62.8</td>
+              <td>2.98</td>
+            </tr>
+
+            <tr>
+              <td>Low use + adequate sleep</td>
+              <td>5.4/10</td>
+              <td>5.2/10</td>
+              <td>34.7</td>
+              <td>3.04</td>
+            </tr>
+
+            <tr>
+              <td>Low use + short sleep</td>
+              <td>5.6/10</td>
+              <td>5.7/10</td>
+              <td>49.8</td>
+              <td>2.98</td>
+            </tr>
+
+          </tbody>
+        </table>
+        <p class='note'>The <span class='hl'>High use + short sleep</span> group concentrates the highest risk index values, supporting the idea that heavy use combined with inadequate sleep is associated with more severe stress and anxiety patterns.</p>
+      </div>
+    </section>
+
+    <!-- Add-on 5: Personas -->
+    <section class='card'>
+      <div class='card-inner'>
+        <h2>Data-driven teen personas</h2>
+        <div class='grid-3'>
+
+          <article class='persona'>
+            <div class='persona-name'>Always-online night owl</div>
+            <div class='persona-meta'>530 teens · ages 13-19</div>
+            <div>Social media: <span class='hl'>5.4 h/day</span> · Sleep: <span class='hl'>5.5 h</span></div>
+            <div>Stress/Anxiety/Addiction: 5.4 / 5.7 / 5.6 (0–10)</div>
+            <div>Academic performance: 2.98</div>
+            <p class='note' style='margin-top:0.4rem;'>Heavy late-night social media, short sleep, consistently elevated stress/anxiety and addiction signals.</p>
+          </article>
+
+          <article class='persona'>
+            <div class='persona-name'>Balanced user</div>
+            <div class='persona-meta'>270 teens · ages 13-19</div>
+            <div>Social media: <span class='hl'>3.9 h/day</span> · Sleep: <span class='hl'>7.9 h</span></div>
+            <div>Stress/Anxiety/Addiction: 5.2 / 5.6 / 5.4 (0–10)</div>
+            <div>Academic performance: 2.97</div>
+            <p class='note' style='margin-top:0.4rem;'>Moderate daily use with healthy sleep; mid-range stress/anxiety and stable academic performance.</p>
+          </article>
+
+          <article class='persona'>
+            <div class='persona-name'>Low-use high-support</div>
+            <div class='persona-meta'>76 teens · ages 13-19</div>
+            <div>Social media: <span class='hl'>2.0 h/day</span> · Sleep: <span class='hl'>7.9 h</span></div>
+            <div>Stress/Anxiety/Addiction: 5.1 / 5.0 / 5.1 (0–10)</div>
+            <div>Academic performance: 2.98</div>
+            <p class='note' style='margin-top:0.4rem;'>Limited social media, good sleep and higher physical activity; lowest stress/anxiety with relatively strong grades.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Add-on 6 & 7: What-if scenarios + academic vs wellbeing trade-off -->
+    <section class='card'>
+      <div class='card-inner'>
+        <div class='grid-2'>
+          <div>
+            <h2>What-if insight: reducing heavy use + fixing sleep</h2>
+
+            <p class='note'>Within this dataset, teens who are <span class='hl'>high-use (≥3h) with short sleep</span> show on average:
+              <br>• Anxiety scores about <span class='hl'>0.5</span> points higher
+              <br>• Stress scores about <span class='hl'>0.1</span> points higher
+              <br>• Risk index roughly <span class='hl'>28.0</span> points higher
+              <br>• Sleeping about <span class='hl'>2.5</span> hours less
+              than low-use teens with adequate sleep.
+            </p>
+            <p class='note'>This suggests that interventions focusing on both <span class='hl'>cutting daily hours</span> and <span class='hl'>restoring 7–9h sleep</span> may have the biggest impact on risk reduction for similar cohorts.</p>
+
+          </div>
+
+          <div>
+            <h2>Academic & wellbeing trade-off</h2>
+            <table aria-label='Academic vs wellbeing by usage and sleep bands'>
+              <thead>
+                <tr>
+                  <th>Usage band</th>
+                  <th>Sleep band</th>
+                  <th>Grades</th>
+                  <th>Stress</th>
+                  <th>Anxiety</th>
+                  <th>Risk index</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr>
+                  <td>0-2h</td>
+                  <td>Adequate (7-9h)</td>
+                  <td>3.13</td>
+                  <td>5.2</td>
+                  <td>5.1</td>
+                  <td>31.6</td>
+                </tr>
+
+                <tr>
+                  <td>0-2h</td>
+                  <td>Short (<7h)</td>
+                  <td>2.94</td>
+                  <td>5.7</td>
+                  <td>5.5</td>
+                  <td>48.2</td>
+                </tr>
+
+                <tr>
+                  <td>2-4h</td>
+                  <td>Adequate (7-9h)</td>
+                  <td>2.98</td>
+                  <td>5.3</td>
+                  <td>5.5</td>
+                  <td>39.3</td>
+                </tr>
+
+                <tr>
+                  <td>2-4h</td>
+                  <td>Short (<7h)</td>
+                  <td>2.99</td>
+                  <td>5.4</td>
+                  <td>5.8</td>
+                  <td>52.5</td>
+                </tr>
+
+                <tr>
+                  <td>4-6h</td>
+                  <td>Adequate (7-9h)</td>
+                  <td>2.96</td>
+                  <td>5.1</td>
+                  <td>5.7</td>
+                  <td>48.4</td>
+                </tr>
+
+                <tr>
+                  <td>4-6h</td>
+                  <td>Short (<7h)</td>
+                  <td>2.95</td>
+                  <td>5.5</td>
+                  <td>5.8</td>
+                  <td>61.3</td>
+                </tr>
+
+                <tr>
+                  <td>6-8h</td>
+                  <td>Adequate (7-9h)</td>
+                  <td>3.00</td>
+                  <td>5.9</td>
+                  <td>5.7</td>
+                  <td>58.6</td>
+                </tr>
+
+                <tr>
+                  <td>6-8h</td>
+                  <td>Short (<7h)</td>
+                  <td>3.03</td>
+                  <td>5.5</td>
+                  <td>5.5</td>
+                  <td>68.8</td>
+                </tr>
+
+                <tr>
+                  <td>8h+</td>
+                  <td>Adequate (7-9h)</td>
+                  <td>3.09</td>
+                  <td>5.8</td>
+                  <td>7.5</td>
+                  <td>65.3</td>
+                </tr>
+
+                <tr>
+                  <td>8h+</td>
+                  <td>Short (<7h)</td>
+                  <td>2.87</td>
+                  <td>5.9</td>
+                  <td>5.5</td>
+                  <td>74.7</td>
+                </tr>
+
+              </tbody>
+            </table>
+            <p class='note'>Cells where <span class='hl'>moderate use</span> meets <span class='hl'>adequate sleep</span> tend to show a more balanced combination of academic performance and lower risk scores than extreme combinations such as high use with short sleep.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>Dataset: Teen survey of age, gender, social media habits, sleep, physical activity, stress, anxiety, addiction and depression labels.</span>
+    <span>Dashboard: advanced risk index, sleep-mediated patterns, personas and what-if insights for interview-ready analytics storytelling.</span>
+  </footer>
+</body>
+</html>
